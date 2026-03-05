@@ -146,11 +146,15 @@ def _handle_status_action(msg: str):
         )
     return None
 
+def _is_resume(msg: str) -> bool:
+    """Returns True if the message is long enough to be a resume."""
+    return len(msg) > 100
+
 def handle(message: str, chat_id: str = "default") -> str:
     global _last_jobs
     
     # Check if they passed a resume text directly
-    if len(message) > 100 and "resume" not in message.lower()[:30] and _detect_intent(message) == "search":
+    if _is_resume(message):
         db.save_resume(message)
         return "📄 *Resume Saved!* I have updated your profile.\nSend *find* to hunt for internships based on this resume."
 
