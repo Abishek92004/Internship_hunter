@@ -138,6 +138,7 @@ def _handle_status_action(msg: str):
             "top            - your best matches\n"
             "status         - stats\n"
             "search nlp     - keyword search\n"
+            "change resume  - update your saved resume\n"
             "applied 2      - mark #2 as applied\n"
             "save 3         - save #3 for later\n"
             "ignore 1       - ignore #1\n\n"
@@ -146,15 +147,21 @@ def _handle_status_action(msg: str):
         )
     return None
 
-def _is_resume(msg: str) -> bool:
-    """Returns True if the message is long enough to be a resume."""
-    return len(msg) > 100
-
 def handle(message: str, chat_id: str = "default") -> str:
     global _last_jobs
+    msg_lower = message.lower().strip()
+
+    if msg_lower in ("change resume", "update resume"):
+        return "To update your resume, send a new message starting with the word *resume:*\n\nExample:\n`resume: I am an experienced Data Scientist with Python...`"
+
+    if msg_lower.startswith("resume:"):
+        db.save_resume(message[7:].strip())
+        return "📄 *Resume Updated!* I have refreshed your profile.\nSend *find* to hunt for internships based on this new resume."
+
+    current_resume = db.get_resume()
     
-    # Check if they passed a resume text directly
-    if _is_resume(message):
+    # Auto-save original resume ONLY if one isn't saved yet
+    if not current_resume and len(message) > 100:
         db.save_resume(message)
         return "📄 *Resume Saved!* I have updated your profile.\nSend *find* to hunt for internships based on this resume."
 
