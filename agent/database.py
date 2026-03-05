@@ -174,3 +174,8 @@ def get_unnotified_high() -> list[dict]:
             ORDER BY uj.match_score DESC LIMIT 10
         """, (chat_id,)).fetchall()
     return [dict(r) for r in rows]
+
+def clear_user_jobs():
+    chat_id = get_user()
+    with get_conn() as conn:
+        conn.execute("DELETE FROM user_jobs WHERE chat_id = ?", (chat_id,))

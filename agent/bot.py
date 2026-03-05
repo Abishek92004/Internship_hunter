@@ -137,6 +137,7 @@ def _handle_status_action(msg: str):
             "new            - jobs found today\n"
             "top            - your best matches\n"
             "status         - stats\n"
+            "clear          - wipe full job history for a fresh start\n"
             "search nlp     - keyword search\n"
             "change resume  - update your saved resume\n"
             "applied 2      - mark #2 as applied\n"
@@ -154,9 +155,14 @@ def handle(message: str, chat_id: str = "default") -> str:
     if msg_lower in ("change resume", "update resume"):
         return "To update your resume, send a new message starting with the word *resume:*\n\nExample:\n`resume: I am an experienced Data Scientist with Python...`"
 
+    if msg_lower in ("reset", "clear", "clear history"):
+        db.clear_user_jobs()
+        _last_jobs = []
+        return "🗑️ *All previous jobs cleared!*\n\nYour dashboard is now completely empty. Send *find* to hunt for brand new jobs based on your current resume."
+
     if msg_lower.startswith("resume:"):
         db.save_resume(message[7:].strip())
-        return "📄 *Resume Updated!* I have refreshed your profile.\nSend *find* to hunt for internships based on this new resume."
+        return "📄 *Resume Updated!* I have refreshed your profile.\n\n_Tip: Send *clear* if you want to wipe old jobs from your dashboard before running a new search._\n\nSend *find* to hunt for internships based on this new resume."
 
     current_resume = db.get_resume()
     
