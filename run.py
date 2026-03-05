@@ -23,6 +23,9 @@ DEFAULT_CONFIG = {
 
 def load_config():
     if not os.path.exists(CONFIG_FILE):
+        if os.environ.get("TELEGRAM_BOT_TOKEN"):
+             print("[Config] config.json missing, but Env Vars are set. Proceeding...")
+             return DEFAULT_CONFIG
         json.dump(DEFAULT_CONFIG, open(CONFIG_FILE, "w"), indent=2)
         print(f"\nCreated config.json")
         print("Fill in your resume text and Telegram bot_token, then run again.\n")
