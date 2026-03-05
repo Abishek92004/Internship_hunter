@@ -22,8 +22,26 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"],
 
 @app.middleware("http")
 async def set_db_user(request: Request, call_next):
-    # For dashboard and API, default to the master user's chat ID
-    db.set_current_user(os.environ.get("TELEGRAM_CHAT_ID", "default"))
+    # Use user id from query parameter if provided
+    u = request.query_params.get("u")
+    if u:
+        db.set_current_user(u)
+    else:
+        # Fallback to the environment var or try finding an active user
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+        if chat_id:
+            db.set_current_user(chat_id)
+        else:
+            try:
+                from agent.database import get_conn
+                with get_conn() as conn:
+                    row = conn.execute("SELECT chat_id FROM users ORDER BY rowid DESC LIMIT 1").fetchone()
+                    if row:
+                        db.set_current_user(row["chat_id"])
+                    else:
+                        db.set_current_user("default")
+            except:
+                db.set_current_user("default")
     return await call_next(request)
 
 DASHBOARD = os.path.join(os.path.dirname(__file__), "..", "dashboard", "index.html")

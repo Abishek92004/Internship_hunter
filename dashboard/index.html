@@ -352,9 +352,12 @@
     let curFilter = "good";
 
     const API = "";  // same origin
+    const urlParams = new URLSearchParams(window.location.search);
+    const userQuery = urlParams.get('u') ? `&u=${urlParams.get('u')}` : '';
+    const userQueryStart = urlParams.get('u') ? `?u=${urlParams.get('u')}` : '';
 
     async function loadStats() {
-      const d = await fetch(API + "/api/stats").then(r => r.json()).catch(() => ({}));
+      const d = await fetch(API + "/api/stats" + userQueryStart).then(r => r.json()).catch(() => ({}));
       document.getElementById("stats").innerHTML = [
         ["Total Found", d.total || 0],
         ["Found Today", d.today || 0],
@@ -370,7 +373,7 @@
     }
 
     async function loadJobs() {
-      const jobs = await fetch(API + "/api/jobs?limit=200").then(r => r.json()).catch(() => []);
+      const jobs = await fetch(API + `/api/jobs?limit=200${userQuery}`).then(r => r.json()).catch(() => []);
       allJobs = jobs;
       renderJobs();
     }
@@ -468,7 +471,7 @@
     }
 
     async function markStatus(id, status, btn) {
-      await fetch(API + `/api/jobs/${id}/status`, {
+      await fetch(API + `/api/jobs/${id}/status` + userQueryStart, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status })
       });

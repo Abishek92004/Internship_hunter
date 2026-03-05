@@ -125,7 +125,7 @@ def _handle_status_action(msg: str):
             f"High priority: {s['high_priority']}\n"
             f"New (unseen):  {s['new']}\n"
             f"Applied:       {s['applied']}\n\n"
-            f"📊 *Dashboard:* https://internshiphunter-production.up.railway.app\n\n"
+            f"📊 *Dashboard:* https://internshiphunter-production.up.railway.app?u={db.get_user()}\n\n"
             f"Send *find* to hunt now."
         )
 
@@ -198,7 +198,7 @@ def handle(message: str, chat_id: str = "default") -> str:
             context, intent
         )
         reply += "\n\n_Reply 'applied N' / 'save N' / 'ignore N' to track a job._"
-        dash_url = "https://internshiphunter-production.up.railway.app"
+        dash_url = f"https://internshiphunter-production.up.railway.app?u={db.get_user()}"
         reply += f"\n📊 *Dashboard:* [Open Control Panel]({dash_url})"
         return reply
 
