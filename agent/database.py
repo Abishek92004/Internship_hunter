@@ -1,17 +1,17 @@
 import sqlite3
-import threading
+import contextvars
 from contextlib import contextmanager
 from .scrapers.base import Job
 
 DB_PATH = "jobs.db"
 
-_user = threading.local()
+_user_ctx = contextvars.ContextVar("chat_id", default="default")
 
 def set_current_user(chat_id: str):
-    _user.chat_id = str(chat_id)
+    _user_ctx.set(str(chat_id))
 
 def get_user() -> str:
-    return getattr(_user, "chat_id", "default")
+    return _user_ctx.get()
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS jobs (
