@@ -166,6 +166,24 @@ def get_config():
     except:
         return {}
 
+@app.get("/api/diagnostic")
+def diagnostic():
+    try:
+        from agent.database import get_conn
+        with get_conn() as conn:
+            all_users = conn.execute("SELECT chat_id FROM users").fetchall()
+            user_jobs_count = conn.execute("SELECT COUNT(*) FROM user_jobs").fetchone()[0]
+            jobs_count = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
+            dist_users = conn.execute("SELECT DISTINCT chat_id FROM user_jobs").fetchall()
+        return {
+            "users": [u[0] for u in all_users],
+            "total_user_jobs": user_jobs_count,
+            "total_jobs": jobs_count,
+            "distinct_chat_ids_in_user_jobs": [u[0] for u in dist_users],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 # ── Webhook setup helper ──────────────────────────────────────
 @app.post("/api/set-webhook")
 async def set_webhook(request: Request):
