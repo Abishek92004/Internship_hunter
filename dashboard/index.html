@@ -411,10 +411,7 @@
 
       const container = document.getElementById("jobs");
       if (!jobs.length) {
-        container.innerHTML = `<div class="empty-state">
-            No jobs found<br>
-            <span style="font-size:0.9rem; color:#888;">Send "find" to your Telegram bot to start hunting</span>
-        </div>`;
+        container.innerHTML = `<div class="empty">No jobs found<p>Send "find" to your Telegram bot to start hunting</p></div>`;
         return;
       }
 
