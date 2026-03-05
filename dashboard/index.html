@@ -332,6 +332,14 @@
     <button class="filter-btn" onclick="setFilter('new',this)">New</button>
     <button class="filter-btn" onclick="setFilter('applied',this)">Applied</button>
     <button class="filter-btn" onclick="setFilter('saved',this)">Saved</button>
+    <select id="platform-filter" class="search-input" onchange="renderJobs()"
+      style="min-width: 140px; cursor: pointer;">
+      <option value="all">All Platforms</option>
+      <option value="linkedin">LinkedIn</option>
+      <option value="internshala">Internshala</option>
+      <option value="remoteok">RemoteOK</option>
+      <option value="wellfound">Wellfound</option>
+    </select>
     <input class="search-input" id="search" placeholder="Search jobs..." oninput="applySearch()">
   </div>
 
@@ -378,6 +386,7 @@
 
     function renderJobs() {
       const search = document.getElementById("search").value.toLowerCase();
+      const platformFilter = document.getElementById("platform-filter").value;
       let jobs = allJobs;
 
       if (curFilter === "good") jobs = jobs.filter(j => j.priority === "high" || j.match_score >= 70);
@@ -404,6 +413,10 @@
           const text = (j.description + j.title).toLowerCase();
           return !(text.includes("stipend") || text.includes("paid") || text.includes("salary") || text.includes("₹") || text.includes("$") || text.includes("lpa") || text.includes("/month"));
         });
+      }
+
+      if (platformFilter !== "all") {
+        jobs = jobs.filter(j => (j.platform || "").toLowerCase().includes(platformFilter));
       }
 
       if (search) jobs = jobs.filter(j =>
