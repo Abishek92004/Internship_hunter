@@ -177,12 +177,12 @@ def handle(message: str, chat_id: str = "default") -> str:
                 return "Could not fetch jobs right now. Try again in a few minutes."
             scored    = matcher.score_jobs(raw_jobs)
             new_count = sum(1 for j in scored if db.save_job(j))
-            top_jobs  = db.get_jobs(min_score=60, limit=8)
+            top_jobs  = db.get_jobs(min_score=0, limit=8)
         elif intent == "new":
             top_jobs  = db.get_jobs(new_only=True, limit=8)
             new_count = len(top_jobs)
         else:
-            top_jobs  = db.get_jobs(min_score=60, limit=8)  # show all above threshold
+            top_jobs  = db.get_jobs(min_score=0, limit=8)  # show all above threshold
             new_count = len(top_jobs)
 
         _last_jobs = top_jobs
