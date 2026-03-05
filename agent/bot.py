@@ -41,10 +41,10 @@ Your job:
 - Understand what the student wants (even if phrased informally)
 - Pick the most relevant jobs from the data given
 - Explain clearly WHY each job is a good match
+- YOU MUST include the direct link (URL) for each internship you recommend. Format it neatly (e.g., "Apply Here: [URL]")
 - Flag anything suspicious (vague descriptions, no company info)
 - Be concise — Telegram has limited space
-- Use simple formatting: bold with *text*
-- Always end with: Reply 'applied N' / 'save N' / 'ignore N' to track a job."""
+- Use simple formatting: bold with *text*"""
 
 def _ask_groq(user_message: str, jobs_context: str, intent: str = "") -> str:
     resume = _resume()
@@ -125,6 +125,7 @@ def _handle_status_action(msg: str):
             f"High priority: {s['high_priority']}\n"
             f"New (unseen):  {s['new']}\n"
             f"Applied:       {s['applied']}\n\n"
+            f"📊 *Dashboard:* {'https://' + os.getenv('RAILWAY_PUBLIC_DOMAIN') if os.getenv('RAILWAY_PUBLIC_DOMAIN') else 'http://localhost:8000'}\n\n"
             f"Send *find* to hunt now."
         )
 
@@ -193,6 +194,8 @@ def handle(message: str, chat_id: str = "default") -> str:
             context, intent
         )
         reply += "\n\n_Reply 'applied N' / 'save N' / 'ignore N' to track a job._"
+        dash_url = f"https://{os.getenv('RAILWAY_PUBLIC_DOMAIN')}" if os.getenv('RAILWAY_PUBLIC_DOMAIN') else "http://localhost:8000"
+        reply += f"\n📊 *Dashboard:* [Open Control Panel]({dash_url})"
         return reply
 
     return "Send *help* to see all commands."
