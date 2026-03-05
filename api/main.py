@@ -134,16 +134,22 @@ def webhook_alive():
 # ── API endpoints ─────────────────────────────────────────────
 @app.get("/api/jobs")
 def api_jobs(priority: str = None, status: str = None,
-             platform: str = None, min_score: float = 0, limit: int = 100):
+             platform: str = None, min_score: float = 0, limit: int = 100, u: str = None):
+    if u:
+        db.set_current_user(u)
     return db.get_jobs(priority=priority, status=status,
                        platform=platform, min_score=min_score, limit=limit)
 
 @app.get("/api/stats")
-def api_stats():
+def api_stats(u: str = None):
+    if u:
+        db.set_current_user(u)
     return db.get_stats()
 
 @app.post("/api/jobs/{job_id}/status")
-async def update_job_status(job_id: int, request: Request):
+async def update_job_status(job_id: int, request: Request, u: str = None):
+    if u:
+        db.set_current_user(u)
     body = await request.json()
     status = body.get("status")
     if status in ("new", "saved", "applied", "ignored"):
