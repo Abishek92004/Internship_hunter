@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+httpx
+beautifulsoup4
+requests
+sentence-transformers
+torch
+groq
