@@ -392,7 +392,7 @@
       const platformFilter = document.getElementById("platform-filter").value;
       let jobs = allJobs;
 
-      if (curFilter === "good") jobs = jobs.filter(j => j.priority === "high" || j.match_score >= 70);
+      if (curFilter === "good") jobs = jobs; // The backend already sorts by best match, so show all returned by default
       if (curFilter === "high") jobs = jobs.filter(j => j.priority === "high");
       if (curFilter === "medium") jobs = jobs.filter(j => j.priority === "medium");
       if (curFilter === "new") jobs = jobs.filter(j => j.status === "new");
