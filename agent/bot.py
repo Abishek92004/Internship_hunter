@@ -91,14 +91,20 @@ def _jobs_to_context(jobs: list[dict], limit: int = 5) -> str:
 
 def _detect_intent(msg: str) -> str:
     m = msg.lower()
-    if any(w in m for w in ["find","search","hunt","fetch","get","show","look"]): return "search"
-    if any(w in m for w in ["new","today","latest","recent","fresh"]):            return "new"
-    if any(w in m for w in ["top","best","highest","good","strongest"]):          return "top"
-    if any(w in m for w in ["status","stats","summary","how many","count"]):      return "status"
-    if re.match(r"applied\s+\d+", m): return "applied"
-    if re.match(r"save\s+\d+", m):    return "save"
-    if re.match(r"ignore\s+\d+", m):  return "ignore"
-    if any(w in m for w in ["help","hi","hello","hey","start"]): return "help"
+    
+    def has_any(words):
+        return any(re.search(rf'\b{w}\b', m) for w in words)
+        
+    if has_any(["find","search","hunt","fetch","get","show","look"]): return "search"
+    if has_any(["new","today","latest","recent","fresh"]):            return "new"
+    if has_any(["top","best","highest","good","strongest"]):          return "top"
+    if has_any(["status","stats","summary","how many","count"]):      return "status"
+    
+    if re.search(r"\bapplied\s+\d+", m): return "applied"
+    if re.search(r"\bsave\s+\d+", m):    return "save"
+    if re.search(r"\bignore\s+\d+", m):  return "ignore"
+    
+    if has_any(["help","hi","hello","hey","start"]): return "help"
     return "search"
 
 def _handle_status_action(msg: str):
@@ -160,8 +166,9 @@ def handle(message: str, chat_id: str = "default") -> str:
         _last_jobs = []
         return "🗑️ *All previous jobs cleared!*\n\nYour dashboard is now completely empty. Send *find* to hunt for brand new jobs based on your current resume."
 
-    if msg_lower.startswith("resume:"):
-        db.save_resume(message[7:].strip())
+    match = re.match(r'^resume\s*:', msg_lower)
+    if match:
+        db.save_resume(message[match.end():].strip())
         return "📄 *Resume Updated!* I have refreshed your profile.\n\n_Tip: Send *clear* if you want to wipe old jobs from your dashboard before running a new search._\n\nSend *find* to hunt for internships based on this new resume."
 
     current_resume = db.get_resume()
